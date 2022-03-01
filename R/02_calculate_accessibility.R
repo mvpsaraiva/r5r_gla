@@ -1,4 +1,4 @@
-options(java.parameters = "-Xmx6G")
+options(java.parameters = "-Xmx16G")
 
 # utils::remove.packages('r5r')
 # devtools::install_github("ipeaGIT/r5r", subdir = "r-package", ref = "dev")
@@ -10,16 +10,16 @@ library("mapview")
 library("sf")
 library("data.table")
 
-od_zones <- st_read(here::here("data", "od_zones_gla.gpkg"))
+od_zones <- st_read(here::here("data_gla", "od_zones_gla.gpkg"))
 od_zones %>% mapview()
 
-od_points_sf <- st_read(here::here("data", "od_points_gla.gpkg"))
+od_points_sf <- st_read(here::here("data_gla", "od_points_gla.gpkg"))
 od_points_sf %>% mapview(zcol="jobs")
 
 
 # r5r_core <- setup_r5(system.file("extdata", package = "r5r"), verbose = FALSE)
 tic()
-r5r_core <- setup_r5(here::here("data"), verbose = TRUE)
+r5r_core <- setup_r5(here::here("data_gla"), verbose = TRUE)
 toc()
 
 transit <- transit_network_to_sf(r5r_core)
@@ -27,14 +27,53 @@ transit <- transit_network_to_sf(r5r_core)
 transit$routes %>% 
   mapview(zcol = "mode")
 
-access_df <- accessibility(r5r_core,
+access_walk_df <- accessibility(r5r_core,
+                                   origins = od_points_sf,
+                                   destinations = od_points_sf,
+                                   mode = c("WALK"),
+                                   opportunities_colname = "jobs",
+                                   departure_datetime = as.POSIXct("02-03-2022 09:00:00", format = "%d-%m-%Y %H:%M:%S"),
+                                   cutoffs = c(30, 60, 90),
+                                   verbose = FALSE)
+
+access_bike_df <- accessibility(r5r_core,
+                                origins = od_points_sf,
+                                destinations = od_points_sf,
+                                mode = c("BICYCLE"),
+                                opportunities_colname = "jobs",
+                                departure_datetime = as.POSIXct("02-03-2022 09:00:00", format = "%d-%m-%Y %H:%M:%S"),
+                                cutoffs = c(30, 60, 90),
+                                verbose = FALSE)
+
+access_bus_df <- accessibility(r5r_core,
+                                   origins = od_points_sf,
+                                   destinations = od_points_sf,
+                                   mode = c("WALK", "BUS"),
+                                   opportunities_colname = "jobs",
+                                   departure_datetime = as.POSIXct("02-03-2022 09:00:00", format = "%d-%m-%Y %H:%M:%S"),
+                                   cutoffs = c(30, 60, 90),
+                                   verbose = FALSE)
+
+access_transit_df <- accessibility(r5r_core,
                            origins = od_points_sf,
                            destinations = od_points_sf,
                            mode = c("WALK", "TRANSIT"),
                            opportunities_colname = "jobs",
-                           departure_datetime = as.POSIXct("14-12-2021 09:00:00", format = "%d-%m-%Y %H:%M:%S"),
+                           departure_datetime = as.POSIXct("02-03-2022 09:00:00", format = "%d-%m-%Y %H:%M:%S"),
                            cutoffs = c(30, 60, 90),
                            verbose = FALSE)
+
+access_walk_df$mode <- "walk"
+access_bike_df$mode <- "bike"
+access_bus_df$mode <- "bus"
+access_transit_df$mode <- "transit"
+
+access_df <- rbind(access_walk_df, access_bike_df, access_bus_df, access_transit_df)
+
+access_wide_df <- access_df %>%
+  select(-percentile) %>%
+  pivot_wider(names_from = c(mode, cutoff), values_from = accessibility)
+
 
 access_df %>%
   left_join(od_zones, by = c("from_id"="code")) %>%
@@ -42,11 +81,8 @@ access_df %>%
   ggplot(aes(fill=accessibility)) +
   geom_sf(aes(geometry=geom), color=NA) +
   scale_fill_distiller(palette = "Spectral") +
-  facet_wrap(~cutoff)
+  facet_grid(mode~cutoff)
 
-access_df %>%
-  left_join(od_zones, by = c("from_id"="code")) %>%
-  filter(cutoff == 30) %>%
-  st_as_sf() %>%
-  mapview(zcol="accessibility")
+access_sf <- left_join(od_zones, access_wide_df, by = c("code"="from_id")) 
 
+st_write(access_sf, here::here("output", "gla_accessibility.shp"))

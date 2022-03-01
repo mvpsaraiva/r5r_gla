@@ -1,11 +1,8 @@
 ---
-title: "Estimating Accessibility"
+title: "Accessibility with R5R - Tutorial"
 author: "Saraiva, Marcus"
-date: "05/01/2022"
+date: "28/02/2022"
 output: html_document
-editor_options: 
-  markdown: 
-    wrap: 72
 ---
 
 ```{r setup, include=FALSE}
@@ -28,12 +25,7 @@ free and open-source [`r5r` package](https://ipeagit.github.io/r5r/index.html).
 R5 stands for [Rapid Realistic Routing on Real-world and Reimagined networks](https://github.com/conveyal/r5).
 
 In this example, we will be using a subset of the Greater London Authority (GLA) 
-area comprised by London's Inner Boroughs. This can be done in X easy steps:
-
-1. Download required data
-2. Setup R environment
-3. 
-
+area comprised by London's Inner Boroughs. 
 
 ## Obtaining the input data
 
@@ -51,7 +43,7 @@ and London's GTFS feeds are provided by the UK's [Department for Transportation]
 Smaller versions of those datasets, comprising only the Inner London area, can
 be downloaded using the code below.
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 gla_pbf_url <- "https://download.geofabrik.de/europe/great-britain/england/greater-london-latest.osm.pbf"
 download.file(gla_pbf_url, 
               destfile = here::here("data_inner/inner-london-latest.osm.pbf"))
@@ -82,13 +74,13 @@ Java processes, which is not enough for large queries using `r5r`. To
 increase available memory to 6GB, for example, we need to set the
 `java.parameters` option, as follows:
 
-```{r, message = FALSE, eval = FALSE}
+```{r echo=TRUE, message=FALSE}
 options(java.parameters = "-Xmx6G")
 ```
 
 Then we can load the packages used in this tutorial:
 
-```{r message=FALSE, warning=FALSE, include=FALSE}
+```{r echo=TRUE, message=FALSE, warning=FALSE}
 library(r5r)
 library(tidyverse)
 library(sf)
