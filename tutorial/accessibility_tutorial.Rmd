@@ -41,7 +41,7 @@ network can be downloaded from [Geofabrik](download.geofabrik.de) daily extracts
 and London's GTFS feeds are provided by the UK's [Department for Transportation](https://data.bus-data.dft.gov.uk/) open data portal. 
 
 Smaller versions of those datasets, comprising only the Inner London area, can
-be downloaded using the code below.
+be downloaded using the code below. Only run this chunk if you want to download the data for the entire GLA areas (not required for this practical exercise)
 
 ```{r eval=FALSE, include=FALSE}
 gla_pbf_url <- "https://download.geofabrik.de/europe/great-britain/england/greater-london-latest.osm.pbf"
@@ -52,6 +52,20 @@ gla_gtfs_url <- "https://data.bus-data.dft.gov.uk/timetable/download/gtfs-file/l
 download.file(gla_gtfs_url, 
               destfile = here::here("data_inner/itm_london_gtfs.zip"))
 ```
+
+NOTE: At times, the automatic download of such large datasets results in a corrupted file. To avoid this issue, you must  download these two files manually and replace them in your data_inner folder.
+
+To manually download the files, go to:
+
+https://drive.google.com/file/d/1zuQOPL21U5ueicW4Rr3ApNUWTH0FRoH-/view?usp=sharing
+The file ‘inner-london-latest.osm.pbf’ will be downloaded
+
+https://data.bus-data.dft.gov.uk/timetable/download/gtfs-file/london
+The file itm_london_gtfs.zip will be downloaded. 
+
+Save both files in your data_inner folder. These will replace the versions of the files automatically downloaded.
+You can now proceed with the tutorial.
+
 
 We also need information on the location and number of opportunities in the study
 area, as well as the geographic locations of places where people live and that we
@@ -117,7 +131,7 @@ od_points_sf
 We can use the `mapview` package to open an interactive map of the input points:
 
 ```{r}
-mapview(od_points_sf)
+mapview(od_points_sf, zcol="jobs")
 ```
 
 ## Calculating and visualising accessibility
@@ -127,9 +141,10 @@ mapview(od_points_sf)
 Finally, we can use the `setup_r5` function from `r5r` to build a routing network
 and load it into memory. The `r5r_core` object returned by `setup_r5` contains 
 all we need for the next steps.
+The code will combine the data on the road network and the schedule from public transport data (GTFS) to produce a road network. 
 
 ```{r include=FALSE}
-r5r_core <- setup_r5(here::here("data_inner"), verbose = FALSE)
+r5r_core <- setup_r5(here::here("data_inner"), verbose = FALSE, temp_dir = TRUE)
 ```
 
 ### Calculating accessibility
@@ -167,7 +182,7 @@ The `accessibility` function above takes the following parameters:
    data provided. 
 -  `cutoffs`: the travel times, in minutes, that we are calculating cumulative-
    opportunities accessibility metrics.
--  `verbose = FALSE`: reduces the amountof outputs to the R console;
+-  `verbose = FALSE`: reduces the amount of outputs to the R console;
 -  `progress = TRUE`: shows the progress of the calculation;
    
 ### Visualising results
@@ -193,4 +208,23 @@ access_sf %>%
   theme(legend.position = "bottom") +
   facet_wrap(~cutoff, labeller = labeller(cutoff = function(s) return(paste(s, "minutes"))))
 ```
+We will now save the maps produced as png images in your folder:
+
+```{r}
+ggsave(here::here("output", "map_inner_gla_access.png"), dpi = 300, width = 20, height = 15, units = "cm")
+```
+
+and save the shapefile containing the accessibility results to your folder, so you can open it using QGIS and create alternative maps.
+Try to open the file and produce a choropleth (graduated colours) map using 10 classes and 'natural breaks' classification method.
+
+```{r}
+st_write(access_sf, here::here("output", "inner_gla_access.shp"))
+```
+
+Now that you have completed this tutorial, you can try changing the parameters of the accessibility and checking the changes in output. 
+Here are some of the changes you can try using the dataset for inner_London:
+
+- Cut-off times: We have calculated the accessibility for 30 and 45 min. Why not try different times? 60 and 90 min cutoff time are commonly used in accessibility analysis. But you can also try 15 min to see how it changes?
+- transport modes: The above calculated used 'transit', which means a combination of all available public transport and walking. You can change transit to bus, for example, to see the impact. Or calculate accessibility by using car, walk or bicycle modes
+- departure time: you can also change the time and see if it affects your results
 
