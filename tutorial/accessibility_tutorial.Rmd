@@ -40,8 +40,7 @@ Both datasets are freely available for the Greater London Authority area. The ro
 network can be downloaded from [Geofabrik](download.geofabrik.de) daily extracts, 
 and London's GTFS feeds are provided by the UK's [Department for Transportation](https://data.bus-data.dft.gov.uk/) open data portal. 
 
-Smaller versions of those datasets, comprising only the Inner London area, can
-be downloaded using the code below. Only run this chunk if you want to download the data for the entire GLA areas (not required for this practical exercise)
+Only run this chunk if you want to download the data for the entire GLA area (not required for this practical exercise). NOTE: At times, the automatic download of such large datasets results in a corrupted file. To avoid this issue, you must  download these two files manually and replace them in your data_inner folder.
 
 ```{r eval=FALSE, include=FALSE}
 gla_pbf_url <- "https://download.geofabrik.de/europe/great-britain/england/greater-london-latest.osm.pbf"
@@ -53,9 +52,8 @@ download.file(gla_gtfs_url,
               destfile = here::here("data_inner/itm_london_gtfs.zip"))
 ```
 
-NOTE: At times, the automatic download of such large datasets results in a corrupted file. To avoid this issue, you must  download these two files manually and replace them in your data_inner folder.
-
-To manually download the files, go to:
+This exercise will be restricted to the Inner London area, and the files must be 
+downloaded manually. Go to:
 
 https://drive.google.com/file/d/1zuQOPL21U5ueicW4Rr3ApNUWTH0FRoH-/view?usp=sharing
 The file ‘inner-london-latest.osm.pbf’ will be downloaded
@@ -64,6 +62,7 @@ https://data.bus-data.dft.gov.uk/timetable/download/gtfs-file/london
 The file itm_london_gtfs.zip will be downloaded. 
 
 Save both files in your data_inner folder. These will replace the versions of the files automatically downloaded.
+
 You can now proceed with the tutorial.
 
 
