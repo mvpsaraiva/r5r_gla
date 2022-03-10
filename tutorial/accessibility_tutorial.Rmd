@@ -140,7 +140,7 @@ mapview(od_points_sf, zcol="jobs")
 Finally, we can use the `setup_r5` function from `r5r` to build a routing network
 and load it into memory. The `r5r_core` object returned by `setup_r5` contains 
 all we need for the next steps.
-The code will combine the data on the road network and the schedule from public transport data (GTFS) to produce a road network. 
+The code will combine the data on the road network and the schedule from public transport data (GTFS) to produce a multi-modal transport network.
 
 ```{r include=FALSE}
 r5r_core <- setup_r5(here::here("data_inner"), verbose = FALSE, temp_dir = TRUE)
