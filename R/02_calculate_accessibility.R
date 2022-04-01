@@ -111,14 +111,3 @@ map(unique(access_df$mode), function(m) {
 
 
 
-access_sf %>%
-  ggplot(aes(fill=accessibility/1000)) +
-  geom_sf(aes(geometry=geom), size=0.2) +
-  coord_sf(datum=NA) +
-  scale_fill_distiller(palette = "Spectral") +
-  labs(fill = "Accessibility\nJobs (x1000)") +
-  theme_light() +
-  theme(legend.position = "bottom") +
-  facet_wrap(~cutoff, labeller = labeller(cutoff = function(s) return(paste(s, "minutes"))))
-
-
