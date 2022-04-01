@@ -86,3 +86,39 @@ access_df %>%
 access_sf <- left_join(od_zones, access_wide_df, by = c("code"="from_id")) 
 
 st_write(access_sf, here::here("output", "gla_accessibility.shp"))
+
+# Map
+
+map(unique(access_df$mode), function(m) {
+  map(unique(access_df$cutoff), function(c, m) {
+    p <- access_df %>%
+      filter(mode == m, cutoff == c) %>%
+      left_join(od_zones, by = c("from_id" = "code")) %>%
+      ggplot(aes(fill=accessibility/1000)) +
+      geom_sf(aes(geometry=geom), size=0.2) +
+      coord_sf(datum=NA) +
+      scale_fill_distiller(palette = "Spectral") +
+      labs(fill = "Accessibility\nJobs (x1000)") +
+      theme_light() +
+      theme(legend.position = "right") +
+      labs(title = "Accessibility to Jobs in the GLA",
+           subtitle = paste0("mode = ", m, ", travel time cutoff = ", c, " minutes"))
+    
+    ggsave(plot = p, filename = here::here("output/maps", paste0("map_gla_", m, "_", c, "min.png")), 
+           dpi = 300, width = 20, height = 15, units = "cm")
+  }, m )
+})
+
+
+
+access_sf %>%
+  ggplot(aes(fill=accessibility/1000)) +
+  geom_sf(aes(geometry=geom), size=0.2) +
+  coord_sf(datum=NA) +
+  scale_fill_distiller(palette = "Spectral") +
+  labs(fill = "Accessibility\nJobs (x1000)") +
+  theme_light() +
+  theme(legend.position = "bottom") +
+  facet_wrap(~cutoff, labeller = labeller(cutoff = function(s) return(paste(s, "minutes"))))
+
+
