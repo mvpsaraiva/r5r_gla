@@ -33,7 +33,7 @@ access_walk_df <- accessibility(r5r_core,
                                    mode = c("WALK"),
                                    opportunities_colname = "jobs",
                                    departure_datetime = as.POSIXct("02-03-2022 09:00:00", format = "%d-%m-%Y %H:%M:%S"),
-                                   cutoffs = c(30, 60, 90),
+                                   cutoffs = c(15, 30, 60, 90),
                                    verbose = FALSE)
 
 access_bike_df <- accessibility(r5r_core,
@@ -42,7 +42,7 @@ access_bike_df <- accessibility(r5r_core,
                                 mode = c("BICYCLE"),
                                 opportunities_colname = "jobs",
                                 departure_datetime = as.POSIXct("02-03-2022 09:00:00", format = "%d-%m-%Y %H:%M:%S"),
-                                cutoffs = c(30, 60, 90),
+                                cutoffs = c(15, 30, 60, 90),
                                 verbose = FALSE)
 
 access_bus_df <- accessibility(r5r_core,
@@ -51,7 +51,7 @@ access_bus_df <- accessibility(r5r_core,
                                    mode = c("WALK", "BUS"),
                                    opportunities_colname = "jobs",
                                    departure_datetime = as.POSIXct("02-03-2022 09:00:00", format = "%d-%m-%Y %H:%M:%S"),
-                                   cutoffs = c(30, 60, 90),
+                                   cutoffs = c(15, 30, 60, 90),
                                    verbose = FALSE)
 
 access_transit_df <- accessibility(r5r_core,
@@ -60,7 +60,7 @@ access_transit_df <- accessibility(r5r_core,
                            mode = c("WALK", "TRANSIT"),
                            opportunities_colname = "jobs",
                            departure_datetime = as.POSIXct("02-03-2022 09:00:00", format = "%d-%m-%Y %H:%M:%S"),
-                           cutoffs = c(30, 60, 90),
+                           cutoffs = c(15, 30, 60, 90),
                            verbose = FALSE)
 
 access_walk_df$mode <- "walk"
