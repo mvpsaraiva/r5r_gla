@@ -48,10 +48,11 @@ piggyback::pb_download("inner-london-latest.osm.pbf",
                        repo = "mvpsaraiva/r5r_gla", 
                        dest = here::here("data_inner"))
 
-gla_gtfs_url <- "https://data.bus-data.dft.gov.uk/timetable/download/gtfs-file/london/"
-download.file(gla_gtfs_url, 
-              destfile = here::here("data_inner/itm_london_gtfs.zip"))
+piggyback::pb_download("itm_london_gtfs.zip", 
+                       repo = "mvpsaraiva/r5r_gla", 
+                       dest = here::here("data_inner"))
 ```
+
 We also need information on the location and number of opportunities in the study
 area, as well as the geographic locations of places where people live and that we
 want to evaluate. The data used in this tutorial, in geopackage format, is provided
@@ -176,7 +177,7 @@ Finally, to see the results, we need to join the results of the `accessibility`
 function with the geometry of the input zones. This can be done in R as well:
 
 ```{r}
-access_sf <- left_join(od_zones, access_df, by = c("code"="from_id"))
+access_sf <- left_join(od_zones, access_df, by = c("code"="id"))
 ```
 
 We can plot the results and visualise how many jobs people can access in 30 and
