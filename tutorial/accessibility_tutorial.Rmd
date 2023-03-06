@@ -177,7 +177,7 @@ Finally, to see the results, we need to join the results of the `accessibility`
 function with the geometry of the input zones. This can be done in R as well:
 
 ```{r}
-access_sf <- left_join(od_zones, access_df, by = c("code"="id"))
+access_sf <- left_join(od_zones, access_df, by = c("code"="id"), multiple = "all")
 ```
 
 We can plot the results and visualise how many jobs people can access in 30 and
